@@ -1,0 +1,1 @@
+var inputs = ["/output/345157ba490d86aea28f5d1a31b92be4aa5e95a9-photo2.json", "/output/bfd3ae181979385dd79dcc3507a890050987926a-photo1.json", "/output/photo1.json", "/output/photo2.json"]
