@@ -1,85 +1,99 @@
 {% extends "layout.html" %}
-{% block page_title %}Старт{% endblock %}
+{% block page_title %}Обработать изображения{% endblock %}
 {% block body %}
     {{ super() }}
 
-    <h4>Можете добавить надпись к первому фото</h4>
-
-    <hr>
-    
-    <h3>Надпись</h3>
-    <div class="form-group">
-      <label for="textArea" class="col-lg-3 control-label">Надпись</label>
-      <div class="col-lg-9">
-      <form action="/write_note" method="post">
-        <input class="form-control" name="text_note_to_take"></input>
-        <button type="submit" class="btn btn-success">Ок</button>
-        </form>
-      </div>
-    </div>
-
-    <hr>
-
-    {% if notes %}
-        <h3>Ваши надписи</h3>
-        <table class="table small">
-            <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Время</th>
-                  <th>Надпись</th>
-                  <th>Действие</th>
-                </tr>
-            </thead>
-            {% for note_id, timestamp, note, act in notes %}
-                    <tr>
-                       <td> {{ note_id }} </td>
-                       <td> {{ timestamp }} </td>
-                       <td> {{ note }} </td>
-                       <td><a href={{act}}>Удалить</a></td>
-                    </tr>
-                    
-            {% endfor %}
-        </table>
-    {% endif %}
 
     <hr>
     <h3>Загрузить изображение</h3>
     <form method='post' action='/upload_image' enctype=multipart/form-data>
-      <p><input type=file name=file>
-         <input type=submit value=Upload>
+      <p><input type=file class="btn btn-info" name=file>
+       <p>  <input type=submit class="btn btn-success" value=Загрузить>
     </form>
 
     {% if images %}
-        <h3>Ваши изображения</h3>
+        <h3>На обработку</h3>
         <table class="table small">
             <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Время</th>
                   <th>Имя</th>
+                  <th>Время</th>
                   <th>Действие</th>
                 </tr>
             </thead>
             {% for image_id, timestamp, image_name, act in images %}
                     <tr>
-                       <td> {{ image_id }} </td>
+                      <td> {{ image_name }} </td>
                        <td> {{ timestamp }} </td>
-                       <td> {{ image_name }} </td>
                        <td><a href={{act}}>Удалить</a></td>
                     </tr>
                     
             {% endfor %}
         </table>
 
+        <div class="row">
+        <div class="col-lg-3"><strong>Образующий элемент</strong></div>
+        <div class="col-lg-3">
+                <form action="/primitive" method="post">
+                <select name="prime_take" onchange='if(this.value != 0) { this.form.submit(); }'>
+                        <option value="4">Круг</option>
+                        <option value="2">Квадрат</option>
+                        <option value="1">Треугольник</option>
+                </select>
+                <button type="submit" id="autoButPrime" hidden>Ок</button>
+                </form>
+        </div>
+        </div>
+        <div class="row">
+        <div class="col-lg-3"><strong>Ширина (px) - с сохранением пропорций</strong></div>
+        <div class="col-lg-3">
+                <form action="/size" method="post">
+                <select name="size_take" onchange='if(this.value != 0) { this.form.submit(); }'>
+                        <option value="300">300</option>
+                        <option value="400">400</option>
+                        <option value="500">500</option>
+                        <option value="600">600</option>
+                        <option value="700">700</option>
+                        <option value="800">800</option>
+                        <option value="900">900</option>
+                        <option value="1000">1000</option>
+                        <option value="1100">1100</option>
+                        <option value="1200">1200</option>
+                </select>
+                <button type="submit" id="autoButSize" hidden>Ок</button>
+                </form>
+        </div>
+        </div>
+        <br><br>
+        <div class="row">
+                <div class="form-group col-lg-6">
+                        <label for="formControlRange">Количество элементов (15-1000)</label>
+                        <form action="/iters" method="post">
+                        <input type="range" name="iters_take" class="form-control-range" id="formControlRange" min="15" max="1000" value="300" onchange='if(this.value != 0) { this.form.submit(); }'><button type="submit" id="autoBut" hidden>Ок</button>
+                      </form>
+                </div>
+        </div>
+        <!-- <script type="text/javascript">function clickAll(){
+          document.getElementById('autoBut').click();
+          document.getElementById('autoButPrime').click();
+          document.getElementById('loading-img').removeAttribute('hidden')
+        }</script> -->
+        <!-- <script type="text/javascript">setInterval(function () {document.getElementById("autoBut").click();}, 1000);</script>
+        <script type="text/javascript">setInterval(function () {document.getElementById("autoButPrime").click();}, 1400);</script> -->
+
         <div class="form-group">
-          <label for="textArea" class="col-lg-3 control-label">Обработать</label>
-            <div class="col-lg-9">
+          <h3>Обработать</h3>
+            <div>
               <form action="/processing" method="post">
-                  <button type="submit" class="btn btn-success">ПОЕХАЛИ!</button>
+                   <img id="loading-img" hidden src="/static/img/loadin.gif" width="350" height="200" /><p></p>
+                   <button onclick="document.getElementById('loading-img').removeAttribute('hidden')" type="submit" class="btn btn-lg btn-danger">ПОЕХАЛИ!</button>
               </form>
+              
             </div>
           </div>
     {% endif %}
+
+    <hr>
+    
 
 {% endblock %}

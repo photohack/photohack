@@ -15,18 +15,18 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">foo() fighters</a>
+            <a class="navbar-brand" href="/">foo(photo)</a>
         </div>
 
         <div class="collapse navbar-collapse" id="myNavbar">
         <ul class="nav navbar-nav">
-            <li><a href="/">Домой</a></li>
-            <li><a href="/public/">Описание</a></li>
+            <li><a href="/">Описание</a></li>
+            <li><a href="/public/">О нас</a></li>
             {% if session.get("current_user", None) != None %}
 	       <li><a href="/private/">Старт</a></li>
 	    {% endif%}
             {% if session.get("current_user", None) == "ADMIN" %}
-	      <li><a href="/admin">О нас</a></li>
+	      <li><a href="/admin">Управление</a></li>
 	    {% endif %}
         </ul>
         

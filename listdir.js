@@ -1,1 +1,1 @@
-var inputs = ["/output/345157ba490d86aea28f5d1a31b92be4aa5e95a9-photo2.json", "/output/bfd3ae181979385dd79dcc3507a890050987926a-photo1.json", "/output/photo1.json", "/output/photo2.json"]
+var inputs = ["/output/01de8d1ad4219fdba6b763a26dd9e2ea3e461091-photo_2019-06-23_20-28-29.json", "/output/a5e20c8b62e912db5d2dda7ddaa9f7c6454ac206-photo_2019-06-23_20-44-31.json"]

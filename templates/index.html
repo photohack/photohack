@@ -1,14 +1,22 @@
 {% extends "layout.html" %}
-{% block page_title %}Welcome{% endblock %}
+{% block page_title %}<img src="/static/img/spinner1.gif" class="img-thumbnail" width="50" height="50"> foo(photo){% endblock %}
 {% block body %}
     {{ super() }}
 
-    <p>foo() fighters</p>
-    <p>PhotoHack 2019</p>
+    <p>Разработано командой foo() fighters для PhotoHack MSK 2019</p>
     <ul>
-        <li>Страница входа</li>
-        <li>Обработка ведется в порядке очереди (не живой конечно)</li>
-    </ul>
+        <li>Что мы использовали:</li>
+        <li><a href="https://d3js.org/">D3Js.org</a>, <a href="http://flask.pocoo.org/">Flask</a></li>
 
-    <p>admin / admin</p>
+        <li>Вдохновлялись:</li>
+        <li><a href="https://primitive.lol/">primitive.lol для macOS</a></li>
+    </ul>
+    <p>Для входа используйте: admin / admin</p>
+<hr>
+<h3>Как пользоваться:</h3>
+<p>Войдите. Перейдите в раздел <a href="/private/">"Старт"</a>. Загрузите два или более фото для обработки, задайте параметры - нажмите "Поехали" (Процесс может занять некоторое время)</p>
+<p>И получите интерактивное фото из геометрических элементов, с которыми можно взаимодействовать</p>
+<p>Примеры:</p>
+<img src="/static/img/gif1.gif" class="img-thumbnail"><img src="/static/img/gif2.gif" class="img-thumbnail">
+
 {% endblock %}

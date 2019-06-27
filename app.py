@@ -100,30 +100,63 @@ def FUN_write_note():
 
     return(redirect(url_for("FUN_private")))
 
+@app.route("/iters", methods = ["POST"])
+def FUN_iters_write():
+    iters_to_write = request.form.get("iters_take")
+    session['iters_to_write'] = iters_to_write
+    return ('', 204)
+
+@app.route("/primitive", methods = ["POST"])
+def FUN_prime_write():
+    prime_to_write = request.form.get("prime_take")
+    session['prime_to_write'] = prime_to_write
+    return ('', 204)
+
+@app.route("/size", methods = ["POST"])
+def FUN_size_write():
+    size_to_write = request.form.get("size_take")
+    session['size_to_write'] = size_to_write
+    return ('', 204)
+
 @app.route("/processing", methods = ["POST"])
 def FUN_processing():
+  # папки вывода json
   output_directory = 'output'
-  size = 256
+  folder = 'output'
+  # Пост запросы от ползунков в privatepage
+  iters = session.get('iters_to_write')
+  prime = session.get('prime_to_write')
+  for the_file in os.listdir(folder):
+    file_path = os.path.join(folder, the_file)
+    try:
+      if os.path.isfile(file_path):
+          os.unlink(file_path)
+      #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+    except Exception as e:
+      print(e)
+  size = session.get('size_to_write')
   svgs = []
   input_images = glob.glob('image_pool/*')
 
+# конвертируем в svg вызовом на Go
   def img_to_svg(img):
     basename = os.path.basename(img)
     new_name = os.path.splitext(basename)[0] + '.svg'
     out_file = os.path.join(output_directory, new_name)
     call =  'primitive -i ' + img 
     call += ' -o ' + out_file
-    call += ' -r ' + str(size)
-    call += ' -s ' + str(size)
-    call += ' -n 300' 
-    call += ' -m 4'
-  
-    print(' * RUN', call)
+    call += ' -r ' + size
+    call += ' -s ' + size
+    call += ' -n ' + iters 
+    call += ' -m ' + prime
+
+    print(' * Process Run', call)
     sholl = call
     print(sholl.split())
     subprocess.call(shlex.split(call))
     return out_file
   
+  # svg в json вручную, подходящий для d3js
   def svg_to_json(svg):
     outsv = svg.replace("\\", "")
     filename = os.path.basename(svg)
@@ -184,7 +217,7 @@ def FUN_processing():
 
   for i in svgs:
     svg_to_json(i)
-
+# сохраняем пути для json в массив js файла, как функцию, который вызовем в result
   f = open('listdir.js', 'w')
   listdir = os.listdir('output')
   dirs = []
@@ -196,7 +229,6 @@ def FUN_processing():
   return(redirect("http://localhost:7000/"))
   # return send_from_directory('.', 'index.html')
 
-
 @app.route("/result/listdir")
 @cross_origin()
 def listdir():
@@ -207,7 +239,7 @@ def listdir():
 
 @app.route("/delete_note/<note_id>", methods = ["GET"])
 def FUN_delete_note(note_id):
-    if session.get("current_user", None) == match_user_id_with_note_id(note_id): # Ensure the current user is NOT operating on other users' note.
+    if session.get("current_user", None) == match_user_id_with_note_id(note_id): # проверяем id надписи и user
         delete_note_from_db(note_id)
     else:
         return abort(401)
@@ -222,12 +254,12 @@ def allowed_file(filename):
 @app.route("/upload_image", methods = ['POST'])
 def FUN_upload_image():
     if request.method == 'POST':
-        # check if the post request has the file part
+        # проверка содержит ли пост запрос файл
         if 'file' not in request.files:
             flash('No file part')
             return(redirect(url_for("FUN_private")))
         file = request.files['file']
-        # if user does not select file, browser also submit a empty part without filename
+        # если нет, все равно вернем пустой
         if file.filename == '':
             flash('No selected file')
             return(redirect(url_for("FUN_private")))
@@ -235,9 +267,9 @@ def FUN_upload_image():
             filename = secure_filename(file.filename)
             upload_time = str(datetime.datetime.now())
             image_uid = hashlib.sha1((upload_time + filename).encode()).hexdigest()
-            # Save the image into UPLOAD_FOLDER
+            # сохраняем картинку в папку
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], image_uid + "-" + filename))
-            # Record this uploading in database
+            # записываем в БД
             image_upload_record(image_uid, session['current_user'], filename, upload_time)
             return(redirect(url_for("FUN_private")))
 
@@ -247,9 +279,9 @@ def FUN_upload_image():
 @app.route("/delete_image/<image_uid>", methods = ["GET"])
 def FUN_delete_image(image_uid):
     if session.get("current_user", None) == match_user_id_with_image_uid(image_uid): # Ensure the current user is NOT operating on other users' note.
-        # delete the corresponding record in database
+        # удаляем связанную запись из бд
         delete_image_from_db(image_uid)
-        # delete the corresponding image file from image pool
+        # удаляем файл из папки
         image_to_delete_from_pool = [y for y in [x for x in os.listdir(app.config['UPLOAD_FOLDER'])] if y.split("-", 1)[0] == image_uid][0]
         os.remove(os.path.join(app.config['UPLOAD_FOLDER'], image_to_delete_from_pool))
     else:
@@ -272,15 +304,15 @@ def FUN_logout():
 @app.route("/delete_user/<id>/", methods = ['GET'])
 def FUN_delete_user(id):
     if session.get("current_user", None) == "ADMIN":
-        if id == "ADMIN": # ADMIN account can't be deleted.
+        if id == "ADMIN": # ADMIN нельзя удалить
             return abort(403)
 
-        # [1] Delete this user's images in image pool
+        # [1] удаляем изображения этого юзера из папки
         images_to_remove = [x[0] for x in list_images_for_user(id)]
         for f in images_to_remove:
             image_to_delete_from_pool = [y for y in [x for x in os.listdir(app.config['UPLOAD_FOLDER'])] if y.split("-", 1)[0] == f][0]
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], image_to_delete_from_pool))
-        # [2] Delele the records in database files
+        # [2] удаляем записи
         delete_user_from_db(id)
         return(redirect(url_for("FUN_admin")))
     else:
@@ -288,8 +320,7 @@ def FUN_delete_user(id):
 
 @app.route("/add_user", methods = ["POST"])
 def FUN_add_user():
-    if session.get("current_user", None) == "ADMIN": # only Admin should be able to add user.
-        # before we add the user, we need to ensure this is doesn't exsit in database. We also need to ensure the id is valid.
+    if session.get("current_user", None) == "ADMIN": # только админ может добавлять юзеров
         if request.form.get('id').upper() in list_users():
             user_list = list_users()
             user_table = zip(range(1, len(user_list)+1),\
