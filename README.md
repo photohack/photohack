@@ -1,6 +1,6 @@
 # foo() photo
 
-![](https://ballzbeatz.com/wp-content/uploads/2018/01/Foo-Fighters-Flashy-Logo-Vinyl-Decal-Sticker.jpg)
+![](https://github.com/photohack/photohack/blob/master/static/img/logo2.jpg)
 
 Project for PhotoHack MSK 2019 by team "foo() Fighters"
 =============
@@ -13,12 +13,14 @@ REQUERIMENTS:
 If you want to local run foo(photo), you should save the repo on your desktop and then install all necessary packages. Go to cmd and type:
 
 > cd path/to/git/photohack
+
 > install_requirements.bat
 
 <abbr title="Hyper Text Markup Language">Python packages will be installed to your global python directory</abbr>
 
 Then run app and local server for result:
 > python app.py
+
 > python -m http.server 7000
 
 Information about usage you can find in section "Описание"
@@ -32,12 +34,14 @@ Information about usage you can find in section "Описание"
 | 4 (local) | 4 img  800*800 (400 iters)   |    97 sec |
 | 12 (server AWS/GCP)| 4 img  800*800 (400 iters)   |    26 sec |
 
-Examples:
+### Examples:
+
 ![](https://github.com/photohack/photohack/blob/master/static/img/gif1.gif)
 ![](https://github.com/photohack/photohack/blob/master/static/img/gif2.gif)
 
-Screenshots:
+### Screenshots:
 ![](https://github.com/photohack/photohack/blob/master/static/img/sc1.jpg)
+
 ![](https://github.com/photohack/photohack/blob/master/static/img/sc2.jpg)
 
 ### End
